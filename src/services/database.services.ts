@@ -1,6 +1,7 @@
 import { Collection, Db, MongoClient, ServerApiVersion } from 'mongodb'
 import dotenv from 'dotenv'
 import User from '~/models/schemas/User.schema'
+import RefreshToken from '~/models/schemas/RefresToken.schema'
 
 dotenv.config()
 const connectString = `mongodb://localhost:27017/twitter`
@@ -23,6 +24,9 @@ class DatabaseService {
 
   get users(): Collection<User> {
     return this.db.collection('users')
+  }
+  get refresh_tokens(): Collection<RefreshToken> {
+    return this.db.collection(process.env.DB_REFRESH_TOKEN_COLLECTION as string)
   }
 }
 

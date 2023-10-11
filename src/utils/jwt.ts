@@ -1,5 +1,7 @@
-import e from 'express'
 import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 interface JWTPayload {
   payload: string | object | Buffer
