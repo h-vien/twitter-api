@@ -7,6 +7,7 @@ import { signToken } from '~/utils/jwt'
 import { TokenType } from '~/constants/enum'
 import { ObjectId } from 'mongodb'
 import RefreshToken from '~/models/schemas/RefresToken.schema'
+import { USERS_MESSAGES } from '~/constants/messages'
 
 dotenv.config()
 
@@ -70,6 +71,13 @@ class UsersService {
       })
     )
     return { accessToken, refreshToken }
+  }
+
+  async logout(refreshToken: string) {
+    await databaseService.refresh_tokens.deleteOne({ token: refreshToken })
+    return {
+      message: USERS_MESSAGES.LOGOUT_SUCCESS
+    }
   }
 }
 
