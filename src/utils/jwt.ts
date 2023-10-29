@@ -7,7 +7,7 @@ dotenv.config()
 interface JWTPayload {
   payload: string | object | Buffer
   options?: jwt.SignOptions
-  privateKey?: string
+  privateKey: string
 }
 
 export const signToken = ({
@@ -15,7 +15,7 @@ export const signToken = ({
   options = {
     algorithm: 'HS256'
   },
-  privateKey = process.env.JWT_SECRET as string
+  privateKey
 }: JWTPayload) => {
   return new Promise<string>((resolve, reject) => {
     jwt.sign(payload, privateKey, options, (err, token) => {
@@ -26,13 +26,7 @@ export const signToken = ({
   })
 }
 
-export const verifyToken = async ({
-  token,
-  secretOrPublicKey = process.env.JWT_SECRET as string
-}: {
-  token: string
-  secretOrPublicKey?: string
-}) => {
+export const verifyToken = async ({ token, secretOrPublicKey }: { token: string; secretOrPublicKey: string }) => {
   return new Promise<TokenPayload>((resolve, reject) => {
     jwt.verify(token, secretOrPublicKey, (error, decoded) => {
       if (error) throw reject(error)
