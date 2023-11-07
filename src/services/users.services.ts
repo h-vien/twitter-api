@@ -166,7 +166,7 @@ class UsersService {
     }
   }
   async resetPassword(user_id: string, password: string) {
-    databaseService.users.updateOne(
+    await databaseService.users.updateOne(
       {
         _id: new ObjectId(user_id)
       },
@@ -183,6 +183,21 @@ class UsersService {
     return {
       message: USERS_MESSAGES.RESET_PASSWORD_SUCCESS
     }
+  }
+  async getMe(user_id: string) {
+    const result = await databaseService.users.findOne(
+      {
+        _id: new ObjectId(user_id)
+      },
+      {
+        projection: {
+          password: 0,
+          email_verified_token: 0,
+          forgot_password_token: 0
+        }
+      }
+    )
+    return result
   }
 }
 
