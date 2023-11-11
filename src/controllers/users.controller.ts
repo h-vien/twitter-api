@@ -11,6 +11,7 @@ import {
   LogoutReqBody,
   RegisterReqBody,
   TokenPayload,
+  UpdateMeReqBody,
   VerifyEmailRequestBody
 } from '~/models/requests/Users.requests'
 import User from '~/models/schemas/User.schema'
@@ -19,8 +20,8 @@ import usersService from '~/services/users.services'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginRequestBody>, res: Response) => {
   const user = req.user as User
-  const { _id } = user
-  const result = await usersService.login(_id.toString())
+  const { _id, verify } = user
+  const result = await usersService.login({ userID: _id.toString(), verify })
   return res.status(200).json({
     message: USERS_MESSAGES.LOGIN_SUCCESS,
     result
@@ -99,8 +100,8 @@ export const forgotPasswordController = async (
   req: Request<ParamsDictionary, any, ForgotPasswordReqBody>,
   res: Response
 ) => {
-  const { _id } = req.user as User
-  const result = await usersService.forgotPassword(_id.toString())
+  const { _id, verify } = req.user as User
+  const result = await usersService.forgotPassword({ userID: _id.toString(), verify })
   return res.json(result)
 }
 
@@ -119,4 +120,14 @@ export const getMeController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const user = await usersService.getMe(user_id)
   return res.json(user)
+}
+
+export const updateMeController = async (req: Request<ParamsDictionary, any, UpdateMeReqBody>, res: Response) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const { body } = req
+  const user = await usersService.updateMe(user_id, body)
+  return res.json({
+    message: 'Updated user success',
+    data: user
+  })
 }

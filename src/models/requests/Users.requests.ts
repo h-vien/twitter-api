@@ -28,3 +28,14 @@ export interface LogoutReqBody {
 export interface ForgotPasswordReqBody {
   email: string
 }
+
+export interface UpdateMeReqBody {
+  name?: string
+  date_of_birth?: Date
+  bio?: string
+  location?: string
+  website?: string
+  username?: string
+  avatar?: string
+  cover_photo?: string
+}
