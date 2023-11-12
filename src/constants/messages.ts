@@ -42,5 +42,7 @@ export const USERS_MESSAGES = {
   USERNAME_MUST_BE_STRING: 'Website must be a string',
   USERNAME_LENGTH: 'Website length must be from 1 to 50',
   IMAGE_MUST_BE_STRING: 'Website must be a string',
-  IMAGE_LENGTH: 'Website length must be from 1 to 50'
+  IMAGE_LENGTH: 'Website length must be from 1 to 50',
+  FOLLOW_SUCCESS: 'Follow success',
+  INVALID_USER_ID: 'Invalid user id'
 } as const

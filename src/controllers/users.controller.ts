@@ -1,11 +1,13 @@
 import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
+import { pick } from 'lodash'
 import { ObjectId } from 'mongodb'
 import { UserVerifyStatus } from '~/constants/enum'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { ErrorWithStatus } from '~/models/Errors'
 import {
+  FollowReqBody,
   ForgotPasswordReqBody,
   LoginRequestBody,
   LogoutReqBody,
@@ -121,13 +123,26 @@ export const getMeController = async (req: Request, res: Response) => {
   const user = await usersService.getMe(user_id)
   return res.json(user)
 }
+export const getUserController = async (req: Request, res: Response) => {
+  const { username } = req.params
+  const user = await usersService.getUserByUsername(username)
+  return res.json(user)
+}
 
 export const updateMeController = async (req: Request<ParamsDictionary, any, UpdateMeReqBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const { body } = req
+  console.log({ body })
   const user = await usersService.updateMe(user_id, body)
   return res.json({
     message: 'Updated user success',
     data: user
   })
+}
+
+export const followController = async (req: Request<ParamsDictionary, any, FollowReqBody>, res: Response) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const { followed_user_id } = req.body
+  const result = await usersService.follow(user_id, followed_user_id)
+  return res.json(result)
 }

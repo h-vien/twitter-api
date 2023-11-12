@@ -8,6 +8,9 @@ import { TokenType, UserVerifyStatus } from '~/constants/enum'
 import { ObjectId } from 'mongodb'
 import RefreshToken from '~/models/schemas/RefresToken.schema'
 import { USERS_MESSAGES } from '~/constants/messages'
+import { ErrorWithStatus } from '~/models/Errors'
+import HTTP_STATUS from '~/constants/httpStatus'
+import Follower from '~/models/schemas/Follower.schema'
 
 dotenv.config()
 
@@ -233,6 +236,45 @@ class UsersService {
       }
     )
     return user.value
+  }
+
+  async getUserByUsername(username: string) {
+    const user = await databaseService.users.findOne(
+      {
+        username
+      },
+      {
+        projection: {
+          password: 0,
+          email_verified_token: 0,
+          forgot_password_token: 0
+        }
+      }
+    )
+    if (user === null) {
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.USER_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+    return user
+  }
+
+  async follow(userID: string, followedUserID: string) {
+    const follower = await databaseService.followers.findOne({
+      user_id: new ObjectId(userID),
+      followed_user_id: new ObjectId(followedUserID)
+    })
+    if (!follower)
+      await databaseService.followers.insertOne(
+        new Follower({
+          user_id: new ObjectId(userID),
+          followed_user_id: new ObjectId(followedUserID)
+        })
+      )
+    return {
+      message: USERS_MESSAGES.FOLLOW_SUCCESS
+    }
   }
 }
 

@@ -9,11 +9,15 @@ import {
   verifyForgotPasswordTokenController,
   resetPasswordController,
   getMeController,
-  updateMeController
+  updateMeController,
+  followController,
+  getUserController
 } from '~/controllers/users.controller'
+import { filterMiddleware } from '~/middlewares/common.middlewares'
 import {
   accessTokenValidator,
   emailVerifyTokenValidator,
+  followValidator,
   forgotPasswordValidator,
   loginValidator,
   refreshTokenValidator,
@@ -23,6 +27,7 @@ import {
   verifiedUserValidator,
   verifyForgotPasswordTokenValidator
 } from '~/middlewares/users.middlewares'
+import { UpdateMeReqBody } from '~/models/requests/Users.requests'
 import { wrapRequestHandler } from '~/utils/handlers'
 
 const usersRouter = Router()
@@ -52,8 +57,28 @@ usersRouter.patch(
   '/me',
   accessTokenValidator,
   verifiedUserValidator,
+  filterMiddleware<UpdateMeReqBody>([
+    'avatar',
+    'date_of_birth',
+    'bio',
+    'cover_photo',
+    'name',
+    'location',
+    'cover_photo',
+    'username'
+  ]),
   updateMeValidator,
   wrapRequestHandler(updateMeController)
+)
+
+usersRouter.get('/:username', wrapRequestHandler(getUserController))
+
+usersRouter.post(
+  '/follow',
+  accessTokenValidator,
+  verifiedUserValidator,
+  followValidator,
+  wrapRequestHandler(followController)
 )
 
 export default usersRouter
