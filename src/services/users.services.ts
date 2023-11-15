@@ -276,6 +276,44 @@ class UsersService {
       message: USERS_MESSAGES.FOLLOW_SUCCESS
     }
   }
+  async unFollow(userID: string, followedUserID: string) {
+    const follower = await databaseService.followers.findOne({
+      user_id: new ObjectId(userID),
+      followed_user_id: new ObjectId(followedUserID)
+    })
+    if (!follower) {
+      return {
+        message: USERS_MESSAGES.USER_NOT_FOUND
+      }
+    }
+    await databaseService.followers.deleteOne({
+      user_id: new ObjectId(userID),
+      followed_user_id: new ObjectId(followedUserID)
+    })
+
+    return {
+      message: USERS_MESSAGES.UNFOLLOW_SUCCESS
+    }
+  }
+  async change_password(userID: string, newPassword: string) {
+    await databaseService.users.findOneAndUpdate(
+      {
+        _id: new ObjectId(userID)
+      },
+      {
+        $set: {
+          password: hashPassword(newPassword)
+        },
+        $currentDate: {
+          updated_at: true
+        }
+      }
+    )
+
+    return {
+      message: USERS_MESSAGES.CHANGE_PASSWORD_SUCCESS
+    }
+  }
 }
 
 const usersService = new UsersService()

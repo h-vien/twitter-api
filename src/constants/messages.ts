@@ -44,5 +44,9 @@ export const USERS_MESSAGES = {
   IMAGE_MUST_BE_STRING: 'Website must be a string',
   IMAGE_LENGTH: 'Website length must be from 1 to 50',
   FOLLOW_SUCCESS: 'Follow success',
-  INVALID_USER_ID: 'Invalid user id'
+  UNFOLLOW_SUCCESS: 'Unfollow success',
+  INVALID_USER_ID: 'Invalid user id',
+  USERNAME_INVALID: 'Username invalid',
+  OLD_PASSWORD_NOT_CORRECT: 'Old password not correct',
+  CHANGE_PASSWORD_SUCCESS: 'Change password success'
 } as const

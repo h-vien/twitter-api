@@ -13,6 +13,7 @@ import { validate } from '~/utils/validations'
 import { NextFunction, Request, Response } from 'express'
 import { TokenPayload } from '~/models/requests/Users.requests'
 import { UserVerifyStatus } from '~/constants/enum'
+import { REGEX_USERNAME } from '~/constants/regex'
 
 const passwordSchema: ParamSchema = {
   isString: {
@@ -155,6 +156,25 @@ const imageSchema: ParamSchema = {
   },
   trim: true
 }
+
+const userIdSchema: ParamSchema = {
+  custom: {
+    options: async (value, { req }) => {
+      if (!ObjectId.isValid(value)) {
+        throw new ErrorWithStatus({
+          message: USERS_MESSAGES.INVALID_USER_ID,
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      }
+      const followedUser = await databaseService.users.findOne({
+        _id: new ObjectId(value)
+      })
+
+      if (!followedUser) throw new Error(USERS_MESSAGES.USER_NOT_FOUND)
+    }
+  }
+}
+
 export const loginValidator = validate(
   checkSchema(
     {
@@ -455,14 +475,21 @@ export const updateMeValidator = validate(
         isString: {
           errorMessage: USERS_MESSAGES.USERNAME_MUST_BE_STRING
         },
-        isLength: {
-          options: {
-            min: 1,
-            max: 50
-          },
-          errorMessage: USERS_MESSAGES.USERNAME_LENGTH
-        },
-        trim: true
+
+        trim: true,
+        custom: {
+          options: async (value: string, { req }) => {
+            if (!REGEX_USERNAME.test(value)) {
+              throw new Error(USERS_MESSAGES.USERNAME_INVALID)
+            }
+            const user = await databaseService.users.findOne({
+              username: value
+            })
+            if (user) {
+              throw new Error('User name existed')
+            }
+          }
+        }
       },
       avatar: imageSchema,
       cover_photo: imageSchema
@@ -474,23 +501,42 @@ export const updateMeValidator = validate(
 export const followValidator = validate(
   checkSchema(
     {
-      followed_user_id: {
+      followed_user_id: userIdSchema
+    },
+    ['body']
+  )
+)
+
+export const unFollowValidator = validate(
+  checkSchema(
+    {
+      user_id: userIdSchema
+    },
+    ['params']
+  )
+)
+
+export const changePasswordValidator = validate(
+  checkSchema(
+    {
+      old_password: {
+        ...passwordSchema,
         custom: {
           options: async (value, { req }) => {
-            if (!ObjectId.isValid(value)) {
-              throw new ErrorWithStatus({
-                message: USERS_MESSAGES.INVALID_USER_ID,
-                status: HTTP_STATUS.NOT_FOUND
-              })
-            }
-            const followedUser = await databaseService.users.findOne({
-              _id: new ObjectId(value)
+            const { user_id } = req.decoded_authorization
+            const user = await databaseService.users.findOne({
+              _id: new ObjectId(user_id)
             })
-
-            if (!followedUser) throw new Error(USERS_MESSAGES.USER_NOT_FOUND)
+            if (!user) throw new Error(USERS_MESSAGES.USER_NOT_FOUND)
+            const { password } = user
+            if (!(hashPassword(value) === password)) {
+              throw new Error(USERS_MESSAGES.OLD_PASSWORD_NOT_CORRECT)
+            }
           }
         }
-      }
+      },
+      password: passwordSchema,
+      confirm_password: confirmPasswordSchema
     },
     ['body']
   )
