@@ -13,7 +13,8 @@ import {
   followController,
   getUserController,
   unFollowController,
-  changePasswordController
+  changePasswordController,
+  oAuthController
 } from '~/controllers/users.controller'
 import { filterMiddleware } from '~/middlewares/common.middlewares'
 import {
@@ -100,5 +101,7 @@ usersRouter.put(
   changePasswordValidator,
   wrapRequestHandler(changePasswordController)
 )
+
+usersRouter.get('/oauth/google', wrapRequestHandler(oAuthController))
 
 export default usersRouter

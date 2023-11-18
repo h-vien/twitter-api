@@ -160,3 +160,9 @@ export const changePasswordController = async (req: Request, res: Response) => {
   const result = await usersService.change_password(user_id, password)
   return res.json(result)
 }
+export const oAuthController = async (req: Request, res: Response) => {
+  const { code } = req.query
+  const result = await usersService.oauth(code as string)
+  const url = `http://localhost:3000/login/oauth?access_token=${result.access_token}&refresh_token=${result.refresh_token}&newUser=${result.newUser}`
+  return res.redirect(url)
+}

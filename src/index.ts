@@ -10,7 +10,7 @@ databaseService.connect()
 const app = express()
 
 console.log(process.env.DB_NAME)
-const port = 3000
+const port = 4000
 
 app.use(express.json())
 
