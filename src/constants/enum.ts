@@ -11,3 +11,8 @@ export enum TokenType {
   ForgotPasswordToken,
   EmailVerifiedToken
 }
+
+export enum MediaType {
+  Video,
+  Image
+}
