@@ -183,7 +183,25 @@ class UsersService {
       refresh_token
     }
   }
-
+  async refreshToken({
+    user_id,
+    verify,
+    refresh_token
+  }: {
+    user_id: string
+    verify: UserVerifyStatus
+    refresh_token: string
+  }) {
+    const [new_access_token, new_refresh_token] = await Promise.all([
+      this.signAccessToken({ userID: user_id, verify }),
+      this.signRefreshToken({ userID: user_id, verify }),
+      databaseService.refresh_tokens.deleteOne({ token: refresh_token })
+    ])
+    return {
+      access_token: new_access_token,
+      refresh_token: new_refresh_token
+    }
+  }
   async resendVerifyEmail(userID: string) {
     const email_verified_token = await this.signEmailVerifyToken({ userID, verify: UserVerifyStatus.Unverified })
     console.log('Resend verify email', email_verified_token)

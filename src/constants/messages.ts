@@ -20,6 +20,7 @@ export const USERS_MESSAGES = {
   CONFIRM_PASSWORD_MUST_BE_A_STRING: 'Confirm password must be a string',
   REGISTER_SUCCESS: 'Register Success',
   LOGIN_SUCCESS: 'Login Success',
+  REFRESH_TOKEN_SUCCESS: 'Refresh token success',
   ACCESS_TOKEN_IS_REQUIRED: 'Access token is required',
   ACCESS_TOKEN_IS_INVALID: 'Access token is invalid',
   REFRESH_TOKEN_IS_REQUIRED: 'RefreshToken is required',
