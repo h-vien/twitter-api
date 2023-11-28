@@ -22,6 +22,33 @@ class DatabaseService {
       console.log(error)
     }
   }
+  async indexUsers() {
+    const existed = await this.users.indexExists(['email_1_password_1', 'email_1', 'username_1'])
+    if (!existed) {
+      this.users.createIndex({ email: 1, password: 1 })
+      this.users.createIndex({ email: 1 }, { unique: true })
+      this.users.createIndex({ username: 1 }, { unique: true })
+    }
+  }
+
+  async indexRefreshTokens() {
+    const existed = await this.users.indexExists(['token_1', 'exp_1'])
+    if (!existed) {
+      this.refresh_tokens.createIndex({ token: 1 }, { unique: true })
+      this.refresh_tokens.createIndex(
+        { exp: 1 },
+        {
+          expireAfterSeconds: 0
+        }
+      )
+    }
+  }
+  async indexFollowers() {
+    const existed = await this.users.indexExists(['token_1', 'exp_1'])
+    if (!existed) {
+      this.followers.createIndex({ follower_user_id: 1, user_id: 1 })
+    }
+  }
 
   get users(): Collection<User> {
     return this.db.collection('users')
