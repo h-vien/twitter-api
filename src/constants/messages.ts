@@ -52,3 +52,15 @@ export const USERS_MESSAGES = {
   CHANGE_PASSWORD_SUCCESS: 'Change password success',
   GMAIL_NOT_VERIFIED: 'Gmail not verified'
 } as const
+
+export const TWEET_MESSAGES = {
+  INVALID_TWEET_TYPE: 'Invalid tweet type',
+  INVALID_TWEET_AUDIENCE: 'Invalid tweet audience',
+  PARENT_ID_MUST_BE_A_VALID_OBJECT_ID: 'Parent id must be a valid id',
+  PARENT_ID_MUST_BE_NULL: 'Parent id must be null',
+  CONTENT_MUST_BE_REQUIRED: 'Content must be required',
+  CONTENT_MUST_BE_EMPTY: 'Content must be empty',
+  INVALID_MEDIA_TYPE: 'Invalid media type',
+  HASHTAGS_MUST_BE_AN_ARRAY_OF_STRING: 'Hashtags must be an array of string',
+  MENTIONS_MUST_BE_AN_ARRAY_OF_OBJECT_ID: 'Mentions must be an array of object id'
+} as const

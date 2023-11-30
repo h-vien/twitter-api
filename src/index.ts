@@ -7,6 +7,7 @@ import staticRouter from './routes/statics.routes'
 import usersRouter from './routes/users.routes'
 import databaseService from './services/database.services'
 import { initFolder } from './utils/file'
+import tweetRouter from './routes/tweets.routes'
 
 dotenv.config()
 databaseService.connect().then(() => {
@@ -24,6 +25,7 @@ app.use(express.json())
 
 app.use('/users', usersRouter)
 app.use('/medias', mediaRouter)
+app.use('/tweets', tweetRouter)
 app.use('/statics/video', express.static(UPLOAD_VIDEO_DIR))
 app.use('/statics', staticRouter)
 
