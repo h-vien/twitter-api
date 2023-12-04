@@ -5,6 +5,7 @@ import RefreshToken from '~/models/schemas/RefresToken.schema'
 import Follower from '~/models/schemas/Follower.schema'
 import Tweet from '~/models/schemas/Tweet.schema'
 import Hashtag from '~/models/schemas/Hashtag.schema'
+import Bookmark from '~/models/schemas/Bookmark.schema'
 
 dotenv.config()
 const connectString = `mongodb://localhost:27017/twitter`
@@ -66,6 +67,9 @@ class DatabaseService {
   }
   get hashtags(): Collection<Hashtag> {
     return this.db.collection(process.env.DB_HASHTAGS_COLLECTION as string)
+  }
+  get bookmarks(): Collection<Bookmark> {
+    return this.db.collection(process.env.DB_BOOKMARKS_COLLECTION as string)
   }
 }
 
