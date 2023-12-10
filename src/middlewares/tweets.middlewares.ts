@@ -3,6 +3,8 @@ import { isEmpty } from 'lodash'
 import { ObjectId } from 'mongodb'
 import { MediaType, TweetAudience, TweetType } from '~/constants/enum'
 import { TWEET_MESSAGES } from '~/constants/messages'
+import { ErrorWithStatus } from '~/models/Errors'
+import databaseService from '~/services/database.services'
 import { numberEnumToArray } from '~/utils/common'
 import { validate } from '~/utils/validations'
 
@@ -99,5 +101,35 @@ export const createTweetValidator = validate(
       }
     },
     ['body']
+  )
+)
+
+export const tweetIDValidator = validate(
+  checkSchema(
+    {
+      tweet_id: {
+        custom: {
+          options: async (value, { req }) => {
+            if (!ObjectId.isValid(value)) {
+              throw new ErrorWithStatus({
+                status: 400,
+                message: 'Tweet id must be a valid object id'
+              })
+            }
+            const tweet = await databaseService.tweets.findOne({
+              _id: new ObjectId(value)
+            })
+            if (!tweet) {
+              throw new ErrorWithStatus({
+                status: 404,
+                message: 'Tweet not found'
+              })
+            }
+            return true
+          }
+        }
+      }
+    },
+    ['params', 'body']
   )
 )
