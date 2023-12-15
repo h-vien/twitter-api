@@ -11,6 +11,7 @@ interface IUser {
   updated_at?: Date
   email_verified_token?: string
   forgot_password_token?: string
+  twitter_circle?: ObjectId[]
   verify?: UserVerifyStatus
   bio?: string
   location?: string
@@ -34,6 +35,7 @@ export default class User {
   bio: string
   location: string
   website: string
+  twitter_circle: ObjectId[]
   avatar: string
   username: string
   cover_photo: string
@@ -49,6 +51,7 @@ export default class User {
     this.email_verified_token = user.email_verified_token || ''
     this.forgot_password_token = user.forgot_password_token || ''
     this.verify = user.verify || UserVerifyStatus.Unverified
+    this.twitter_circle = user.twitter_circle || []
     this.bio = user.bio || ''
     this.location = user.location || ''
     this.website = user.website || ''
