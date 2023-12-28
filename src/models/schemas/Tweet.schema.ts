@@ -28,8 +28,8 @@ export default class Tweet {
   parent_id: null | ObjectId
   hashtags: ObjectId[]
   mentions: ObjectId[]
-  guest_views?: number
-  user_views?: number
+  guest_views: number
+  user_views: number
   created_at?: Date
   updated_at?: Date
 

@@ -230,6 +230,7 @@ export const tweetIDValidator = validate(
 
 export const audienceValidator = wrapRequestHandler(async (req: Request, res: Response, next: NextFunction) => {
   const tweet = req.tweet as Tweet
+  console.log(tweet, 'tweet')
   if (tweet.audience === TweetAudience.TwitterCircle) {
     if (!req.decoded_authorization)
       throw new ErrorWithStatus({
@@ -246,8 +247,11 @@ export const audienceValidator = wrapRequestHandler(async (req: Request, res: Re
         status: HTTP_STATUS.NOT_FOUND,
         message: USERS_MESSAGES.USER_NOT_FOUND
       })
-    const isInTwitterCircle = author.twitter_circle.some((userCircleID) => userCircleID.equals(user_id))
-    if (!isInTwitterCircle || !author._id.equals(tweet.user_id))
+    console.log(author, 'author', tweet.user_id, 'tweet.user_id', author._id, author._id.equals(tweet.user_id))
+    const isInTwitterCircle = author.twitter_circle?.some((userCircleID) => userCircleID.equals(tweet.user_id))
+    console.log(isInTwitterCircle, 'isInTwitterCircle')
+
+    if (!isInTwitterCircle && !author._id.equals(tweet.user_id))
       throw new ErrorWithStatus({
         status: HTTP_STATUS.FORBIDDEN,
         message: 'You are not in the twitter circle of the tweet author'
@@ -255,3 +259,40 @@ export const audienceValidator = wrapRequestHandler(async (req: Request, res: Re
   }
   next()
 })
+
+export const getTweetChildrenValidator = validate(
+  checkSchema(
+    {
+      tweet_type: {
+        isIn: {
+          options: [tweetTypes],
+          errorMessage: TWEET_MESSAGES.INVALID_TWEET_TYPE
+        }
+      },
+      limit: {
+        isNumeric: true,
+        custom: {
+          options: async (value, { req }) => {
+            const num = Number(value)
+            if (num > 100 && num < 1) {
+              throw new Error('Maximum is 100 and minimum is 1')
+            }
+            return true
+          }
+        }
+      },
+      page: {
+        isNumeric: true,
+        custom: {
+          options: async (value, { req }) => {
+            const num = Number(value)
+            if (num < 1) {
+              throw new Error('Minimum is 1')
+            }
+          }
+        }
+      }
+    },
+    ['query']
+  )
+)
