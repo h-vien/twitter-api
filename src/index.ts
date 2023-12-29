@@ -9,6 +9,7 @@ import databaseService from './services/database.services'
 import { initFolder } from './utils/file'
 import tweetRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/boookmarks.routes'
+// import '~/utils/fake'
 
 dotenv.config()
 databaseService.connect().then(() => {

@@ -4,11 +4,12 @@ import Tweet from '~/models/schemas/Tweet.schema'
 import { ObjectId, WithId } from 'mongodb'
 import Hashtag from '~/models/schemas/Hashtag.schema'
 import { TweetType } from '~/constants/enum'
+import usersService from './users.services'
 
 interface Query {
-  tweet_type: TweetType
   limit: number
   page: number
+  tweet_type?: TweetType
   user_id?: string
 }
 class TweetService {
@@ -212,6 +213,24 @@ class TweetService {
       tweets,
       total
     }
+  }
+  async getNewFeeds(user_id: string, { limit, page }: Query) {
+    const followed_user_ids = await databaseService.followers
+      .find(
+        {
+          user_id: new ObjectId(user_id)
+        },
+        {
+          projection: {
+            followed_user_id: 1,
+            _id: 0
+          }
+        }
+      )
+      .toArray()
+    const ids = followed_user_ids.map((item) => item.followed_user_id)
+    ids.push(new ObjectId(user_id))
+    return ids
   }
 }
 

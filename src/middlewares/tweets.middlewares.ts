@@ -261,14 +261,19 @@ export const audienceValidator = wrapRequestHandler(async (req: Request, res: Re
 })
 
 export const getTweetChildrenValidator = validate(
+  checkSchema({
+    tweet_type: {
+      isIn: {
+        options: [tweetTypes],
+        errorMessage: TWEET_MESSAGES.INVALID_TWEET_TYPE
+      }
+    }
+  })
+)
+
+export const paginationValidator = validate(
   checkSchema(
     {
-      tweet_type: {
-        isIn: {
-          options: [tweetTypes],
-          errorMessage: TWEET_MESSAGES.INVALID_TWEET_TYPE
-        }
-      },
       limit: {
         isNumeric: true,
         custom: {
