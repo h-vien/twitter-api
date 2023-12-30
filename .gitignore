@@ -3,3 +3,4 @@ dist/
 .idea
 uplodas/
 .env
+.DS_Store
