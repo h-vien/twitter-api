@@ -12,6 +12,7 @@ import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import Follower from '~/models/schemas/Follower.schema'
 import axios from 'axios'
+import { sendVerifyEmail } from '~/utils/email'
 
 dotenv.config()
 
@@ -154,6 +155,14 @@ class UsersService {
         iat,
         exp
       })
+    )
+    sendVerifyEmail(
+      payload.email,
+      'Verify your email',
+      `
+      <h1>Verify your email</h1>
+      <p>Click <a href="${process.env.CLIENT_URL}/verify-email?token=${emailVerifyToken}">here</a> to verify your email</p>
+      `
     )
     return {
       accessToken,
