@@ -1,8 +1,11 @@
 /* eslint-disable no-undef */
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses'
 import { config } from 'dotenv'
+import fs from 'fs'
+import path from 'path'
 
 config()
+const verifyEmailTemplate = fs.readFileSync(path.resolve('src/template/verify-email.html'), 'utf8')
 
 // Create SES service object.
 const sesClient = new SESClient({
@@ -61,4 +64,35 @@ export const sendVerifyEmail = async (toAddress: string, subject: string, body: 
     subject
   })
   return sesClient.send(sendEmailCommand)
+}
+
+export const sendVerifyRegisterEmail = async (
+  toAddress: string,
+  emailVerifyToken: string,
+  template: string = verifyEmailTemplate
+) => {
+  return sendVerifyEmail(
+    toAddress,
+    'Verify your email',
+    template
+      .replace('{{title}}', 'Please verify your email')
+      .replace('{{content}}', 'Please click the button below to verify your email address.')
+      .replace('{{link}}', `${process.env.CLIENT_URL}/verify-email?token=${emailVerifyToken}`)
+      .replace('{{titleLink}}', 'Verify Email')
+  )
+}
+export const sendForgotPasswordEmail = async (
+  toAddress: string,
+  forgotPasswordVerifyToken: string,
+  template: string = verifyEmailTemplate
+) => {
+  return sendVerifyEmail(
+    toAddress,
+    'Reset password',
+    template
+      .replace('{{title}}', 'Reset your password')
+      .replace('{{content}}', 'Please click the button below to verify your email address.')
+      .replace('{{link}}', `${process.env.CLIENT_URL}/reset-password?token=${forgotPasswordVerifyToken}`)
+      .replace('{{titleLink}}', 'Reset Password')
+  )
 }

@@ -12,7 +12,7 @@ import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import Follower from '~/models/schemas/Follower.schema'
 import axios from 'axios'
-import { sendVerifyEmail } from '~/utils/email'
+import { sendForgotPasswordEmail, sendVerifyEmail, sendVerifyRegisterEmail } from '~/utils/email'
 
 dotenv.config()
 
@@ -156,14 +156,7 @@ class UsersService {
         exp
       })
     )
-    sendVerifyEmail(
-      payload.email,
-      'Verify your email',
-      `
-      <h1>Verify your email</h1>
-      <p>Click <a href="${process.env.CLIENT_URL}/verify-email?token=${emailVerifyToken}">here</a> to verify your email</p>
-      `
-    )
+    await sendVerifyRegisterEmail(payload.email, emailVerifyToken)
     return {
       accessToken,
       refreshToken
@@ -246,7 +239,7 @@ class UsersService {
       refresh_token: new_refresh_token
     }
   }
-  async resendVerifyEmail(userID: string) {
+  async resendVerifyEmail(userID: string, email: string) {
     const email_verified_token = await this.signEmailVerifyToken({ userID, verify: UserVerifyStatus.Unverified })
     console.log('Resend verify email', email_verified_token)
     await databaseService.users.updateOne(
@@ -255,11 +248,12 @@ class UsersService {
       },
       { $set: { email_verified_token }, $currentDate: { updated_at: true } }
     )
+    await sendVerifyRegisterEmail(email, email_verified_token)
     return {
       message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS
     }
   }
-  async forgotPassword({ userID, verify }: { userID: string; verify: UserVerifyStatus }) {
+  async forgotPassword({ userID, verify, email }: { userID: string; verify: UserVerifyStatus; email: string }) {
     const forgot_password_token = await this.signForgotPasswordVerifyToken({ userID, verify })
     console.log('Forgot password:', forgot_password_token)
     databaseService.users.updateOne(
@@ -275,6 +269,8 @@ class UsersService {
         }
       }
     )
+    await sendForgotPasswordEmail(email, forgot_password_token)
+
     return {
       message: USERS_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD
     }
