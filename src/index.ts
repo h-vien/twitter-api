@@ -9,6 +9,7 @@ import usersRouter from './routes/users.routes'
 import databaseService from './services/database.services'
 import tweetRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/boookmarks.routes'
+import './utils/s3'
 import searchRouter from './routes/search.routes'
 // import '~/utils/fake'
 
