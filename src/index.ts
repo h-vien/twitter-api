@@ -14,6 +14,7 @@ import cors, { CorsOptions } from 'cors'
 import searchRouter from './routes/search.routes'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
+import Conversation from './models/schemas/Conversations.schema'
 // import '~/utils/fake'
 
 dotenv.config()
@@ -57,6 +58,13 @@ io.on('connection', (socket) => {
     const { message, to } = data
     console.log('message', message)
     console.log('to', to)
+    databaseService.conversations.insertOne(
+      new Conversation({
+        sender_id: userId,
+        content: message,
+        receiver_id: to
+      })
+    )
     socket.to(users[to].socket_id).emit('receive private message', {
       message,
       from: userId

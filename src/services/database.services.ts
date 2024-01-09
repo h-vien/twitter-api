@@ -6,6 +6,7 @@ import Follower from '~/models/schemas/Follower.schema'
 import Tweet from '~/models/schemas/Tweet.schema'
 import Hashtag from '~/models/schemas/Hashtag.schema'
 import Bookmark from '~/models/schemas/Bookmark.schema'
+import Conversation from '~/models/schemas/Conversations.schema'
 
 dotenv.config()
 const connectString = `mongodb://localhost:27017/twitter`
@@ -70,6 +71,9 @@ class DatabaseService {
   }
   get bookmarks(): Collection<Bookmark> {
     return this.db.collection(process.env.DB_BOOKMARKS_COLLECTION as string)
+  }
+  get conversations(): Collection<Conversation> {
+    return this.db.collection(process.env.DB_BOOKMARKS_CONVERSATION as string)
   }
 }
 
