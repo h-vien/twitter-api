@@ -15,6 +15,8 @@ import searchRouter from './routes/search.routes'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import Conversation from './models/schemas/Conversations.schema'
+import conversationRouter from './routes/conversation.routes'
+import { ObjectId } from 'mongodb'
 // import '~/utils/fake'
 
 dotenv.config()
@@ -60,9 +62,9 @@ io.on('connection', (socket) => {
     console.log('to', to)
     databaseService.conversations.insertOne(
       new Conversation({
-        sender_id: userId,
+        sender_id: new ObjectId(userId),
         content: message,
-        receiver_id: to
+        receiver_id: new ObjectId(to)
       })
     )
     socket.to(users[to].socket_id).emit('receive private message', {
@@ -82,6 +84,7 @@ app.use('/users', usersRouter)
 app.use('/medias', mediaRouter)
 app.use('/tweets', tweetRouter)
 app.use('/search', searchRouter)
+app.use('/conversations', conversationRouter)
 app.use('/bookmarks', bookmarksRouter)
 app.use('/statics/video', express.static(UPLOAD_VIDEO_DIR))
 app.use('/statics', staticRouter)
