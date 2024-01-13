@@ -17,8 +17,41 @@ import { Server } from 'socket.io'
 import Conversation from './models/schemas/Conversations.schema'
 import conversationRouter from './routes/conversation.routes'
 import { ObjectId } from 'mongodb'
+import swaggerUI from 'swagger-ui-express'
+import swaggerJSDoc from 'swagger-jsdoc'
+import YAML from 'yaml'
 // import '~/utils/fake'
+import fs from 'fs'
+import path from 'path'
 
+// const file = fs.readFileSync(path.resolve('paths.yaml'), 'utf-8')
+// const swaggerDocument = YAML.parse(file)
+const options: swaggerJSDoc.Options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'X clone (Twitter API)',
+      version: '1.0.0'
+    },
+    components: {
+      securitySchemes: {
+        BearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT'
+        }
+      }
+    },
+    security: [
+      {
+        BearerAuth: []
+      }
+    ],
+    persistAuthorization: true
+  },
+  apis: ['./docs/*.yaml'] // files containing annotations as above
+}
+const openapiSpecification = swaggerJSDoc(options)
 dotenv.config()
 databaseService.connect().then(() => {
   databaseService.indexUsers()
@@ -81,6 +114,7 @@ io.on('connection', (socket) => {
 })
 
 app.use('/users', usersRouter)
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(openapiSpecification))
 app.use('/medias', mediaRouter)
 app.use('/tweets', tweetRouter)
 app.use('/search', searchRouter)

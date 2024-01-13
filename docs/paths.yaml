@@ -1,0 +1,671 @@
+openapi: 3.0.3
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  description: |-
+    This is a sample Pet Store Server based on the OpenAPI 3.0 specification.  You can find out more about
+    Swagger at [https://swagger.io](https://swagger.io). In the third iteration of the pet store, we've switched to the design first approach!
+    You can now help us improve the API whether it's by making changes to the definition itself or to the code.
+    That way, with time, we can improve the API in general, and expose some of the new features in OAS3.
+
+    _If you're looking for the Swagger 2.0/OAS 2.0 version of Petstore, then click [here](https://editor.swagger.io/?url=https://petstore.swagger.io/v2/swagger.yaml). Alternatively, you can load via the `Edit > Load Petstore OAS 2.0` menu option!_
+
+    Some useful links:
+    - [The Pet Store repository](https://github.com/swagger-api/swagger-petstore)
+    - [The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: http://localhost:4000
+
+tags:
+  - name: users
+    description: Các API liên quan đến người dùng twitter
+  - name: tweets
+    description: Các API liên quan đến tweet
+  - name: medias
+    description: Các API liên quan đến media như upload ảnh, video
+  - name: static
+    description: Các API liên quan đến serving static file như avatar, ảnh, video
+  - name: search
+    description: Các API liên quan đến tìm kiếm
+  - name: likes
+    description: Các API liên quan đến like tweet
+  - name: bookmarks
+    description: Các API liên quan đến bookmark tweet
+  - name: conversations
+    description: Các API liên quan đến chat
+paths:
+  /users/login:
+    post:
+      tags:
+        - users
+      summary: Đăng nhập
+      description: Đăng nhập vào hệ thống x clone
+      operationId: login
+      requestBody:
+        description: Thông tin đăng nhập
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginBody'
+        required: true
+      responses:
+        '200':
+          description: Đăng nhập thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Login success
+                  result:
+                    $ref: '#/components/schemas/SuccessAuthentication'
+  /users/me:
+    get:
+      tags:
+        - users
+      summary: Lấy thông tin user
+      description: Lấy thông tin user
+      operationId: getMe
+      security:
+        - BearerAuth: []
+      responses:
+        default:
+          description: Lấy thông tin user thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    patch:
+      tags:
+        - users
+      summary: Cập nhật thông tin user
+      description: Cập nhật thông tin user
+      operationId: updateMe
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Thông tin cập nhật user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMeBody'
+        required: true
+  /users/register:
+    post:
+      tags:
+        - users
+      summary: Đăng ký tài khoản
+      description: Đăng ký tài khoản
+      operationId: register
+      requestBody:
+        description: Thông tin đăng ký
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterBody'
+        required: true
+      responses:
+        '200':
+          description: Đăng ký thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Register success
+                  result:
+                    $ref: '#/components/schemas/SuccessAuthentication'
+  /users/logout:
+    post:
+      tags:
+        - users
+      summary: Đăng xuất
+      description: Đăng xuất
+      operationId: logout
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Thông tin đăng xuất
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjRiZTBhZDJlNDNkMjQ2NDM5NGZlZWRiIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjoxLCJpYXQiOjE2OTEzODMyMjYsImV4cCI6MTcwMDAyMzIyNn0.bFnaBfxWl-Q48HCwAeMpNzZwTO9LEjcBd7Zyipjqr64
+        required: true
+      responses:
+        '200':
+          description: Đăng xuất thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Logout success
+  /users/refresh-token:
+    post:
+      tags:
+        - users
+      summary: Lấy lại access token
+      description: Lấy lại access token
+      operationId: refreshToken
+      requestBody:
+        description: Thông tin lấy lại access token
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjRiZTBhZDJlNDNkMjQ2NDM5NGZlZWRiIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjoxLCJpYXQiOjE2OTEzODMyMjYsImV4cCI6MTcwMDAyMzIyNn0.bFnaBfxWl-Q48HCwAeMpNzZwTO9LEjcBd7Zyipjqr64
+        required: true
+      responses:
+        '200':
+          description: Lấy lại access token thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Refresh token success
+                  result:
+                    $ref: '#/components/schemas/SuccessAuthentication'
+  /users/resend-verify-email:
+    post:
+      tags:
+        - users
+      summary: Gửi lại email xác thực
+      description: Gửi lại email xác thực
+      operationId: resendVerifyEmail
+      requestBody:
+        description: Thông tin gửi lại email xác thực
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Gửi lại email xác thực thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Resend verify email success
+  /users/forgot-password:
+    post:
+      tags:
+        - users
+      summary: Quên mật khẩu
+      description: Quên mật khẩu
+      operationId: forgotPassword
+      requestBody:
+        description: Thông tin quên mật khẩu
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: vien200203@gmail.com
+        required: true
+      responses:
+        '200':
+          description: Nhận được email reset password
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Kiểm tra email để reset mật khẩu
+  /users/verify-forgot-password:
+    post:
+      tags:
+        - users
+      summary: Xác thực link trong email để reset mật khẩu
+      description: Xác thực link trong email để reset mật khẩu
+      operationId: verifyForgotPassword
+      requestBody:
+        description: Thông tin xác thực link trong email để reset mật khẩu
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                forgot_password_token:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjRiZTBhZDJlNDNkMjQ2NDM5NGZlZWRiIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjoxLCJpYXQiOjE2OTEzODMyMjYsImV4cCI6MTcwMDAyMzIyNn0.bFnaBfxWl-Q48HCwAeMpNzZwTO9LEjcBd7Zyipjqr64
+        required: true
+      responses:
+        '200':
+          description: Xác thực link trong email để reset mật khẩu thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Xác thực link trong email để reset mật khẩu thành công
+  /users/reset-password:
+    post:
+      tags:
+        - users
+      summary: Reset mật khẩu
+      description: Reset mật khẩu
+      operationId: resetPassword
+      requestBody:
+        description: Thông tin reset mật khẩu
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                forgot_password_token:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjRiZTBhZDJlNDNkMjQ2NDM5NGZlZWRiIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjoxLCJpYXQiOjE2OTEzODMyMjYsImV4cCI6MTcwMDAyMzIyNn0.bFnaBfxWl-Q48HCwAeMpNzZwTO9LEjcBd7Zyipjqr64
+                password:
+                  type: string
+                  example: Vien123!
+                confirm_password:
+                  type: string
+                  example: Vien123!
+        required: true
+      responses:
+        default:
+          description: Reset mật khẩu thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Reset mật khẩu thành công
+  /users/{username}:
+    get:
+      tags:
+        - users
+      summary: Lấy thông tin user theo username
+      description: Lấy thông tin user theo username
+      operationId: getUserByUsername
+      parameters:
+        - name: username
+          in: path
+          description: username của user
+          required: true
+          schema:
+            type: string
+            example: vienhuynh
+      responses:
+        default:
+          description: Lấy thông tin user theo username thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /users/follow:
+    post:
+      tags:
+        - users
+      summary: Follow user
+      description: Follow user
+      operationId: followUser
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Thông tin follow user
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                followed_user_id:
+                  type: string
+                  format: MongoId
+                  example: 64be0ad2e43d2464394feedb
+        required: true
+      responses:
+        default:
+          description: Follow user thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Follow user thành công
+  /users/{user_id}:
+    delete:
+      tags:
+        - users
+      summary: Unfollow user
+      description: Unfollow user
+      operationId: unfollowUser
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          description: Id của user
+          required: true
+          schema:
+            type: string
+            format: MongoId
+            example: 64be0ad2e43d2464394feedb
+      responses:
+        default:
+          description: Unfollow user thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unfollow user thành công
+  /users/change-password:
+    put:
+      tags:
+        - users
+      summary: Đổi mật khẩu
+      description: Đổi mật khẩu
+      operationId: changePassword
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Thông tin đổi mật khẩu
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                old_password:
+                  type: string
+                  example: Vien123!
+                password:
+                  type: string
+                  example: Vien1234!
+                confirm_password:
+                  type: string
+                  example: Vien1234!
+        required: true
+      responses:
+        default:
+          description: Đổi mật khẩu thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đổi mật khẩu thành công
+  /tweets:
+    post:
+      tags:
+        - tweets
+      summary: Tạo tweet
+      description: Tạo tweet
+      operationId: createTweet
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Thông tin tạo tweet
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TweetRequestBody'
+        required: true
+      responses:
+        default:
+          description: Tạo tweet thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Tạo tweet thành công
+    get:
+      tags:
+        - tweets
+      summary: Lấy danh sách tweet từ những người mình theo dõi
+      description: Lấy danh sách tweet từ những người mình theo dõi
+      operationId: getTweets
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Số trang
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: limit
+          in: query
+          description: Số lượng tweet trên 1 trang
+          required: false
+          schema:
+            type: integer
+            example: 10
+      responses:
+        default:
+          description: Lấy danh sách tweet thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lấy danh sách tweet thành công
+                  result:
+                    type: object
+                    properties:
+                      tweets:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Tweet'
+                      total_page:
+                        type: integer
+                        example: 1
+                      limit:
+                        type: integer
+                        example: 10
+                      page:
+                        type: integer
+                        example: 1
+  /tweets/{tweet_id}:
+    get:
+      tags:
+        - tweets
+      summary: Lấy thông tin tweet theo id
+      description: Lấy thông tin tweet theo id
+      operationId: getTweetById
+      parameters:
+        - name: tweet_id
+          in: path
+          description: Id của tweet
+          required: true
+          schema:
+            type: string
+            format: MongoId
+            example: 64be0ad2e43d2464394feedb
+      responses:
+        default:
+          description: Lấy thông tin tweet theo id thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lấy thông tin tweet theo id thành công
+                  result:
+                    $ref: '#/components/schemas/Tweet'
+  /tweets/{tweet_id}/children:
+    get:
+      tags:
+        - tweets
+      summary: Lấy danh sách tweet con theo id
+      description: Lấy danh sách tweet con theo id
+      operationId: getTweetChildrenById
+      parameters:
+        - name: tweet_id
+          in: path
+          description: Id của tweet
+          required: true
+          schema:
+            type: string
+            format: MongoId
+            example: 64be0ad2e43d2464394feedb
+        - name: page
+          in: query
+          description: Số trang
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: limit
+          in: query
+          description: Số lượng tweet trên 1 trang
+          required: false
+          schema:
+            type: integer
+            example: 10
+        - name: tweet_type
+          in: query
+          description: Loại tweet
+          required: false
+          schema:
+            $ref: '#/components/schemas/TweetType'
+      responses:
+        default:
+          description: Lấy danh sách tweet con theo id thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lấy danh sách tweet con theo id thành công
+                  result:
+                    type: object
+                    properties:
+                      tweets:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Tweet'
+                      total_page:
+                        type: integer
+                        example: 1
+                      limit:
+                        type: integer
+                        example: 10
+                      page:
+                        type: integer
+                        example: 1
+                      tweet_type:
+                        $ref: '#/components/schemas/TweetType'
+  /medias/upload-image:
+    post:
+      tags:
+        - medias
+      summary: Upload ảnh
+      description: Upload ảnh
+      operationId: uploadImage
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Thông tin upload ảnh, upload 1 hoặc nhiều ảnh
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  maxItems: 4
+        required: true
+      responses:
+        default:
+          description: Upload ảnh thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Upload ảnh thành công
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Media'
+  /medias/upload-video:
+    post:
+      tags:
+        - medias
+      summary: Upload video
+      description: Upload video
+      operationId: uploadVideo
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Thông tin upload video, chỉ upload được 1 video
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                video:
+                  type: string
+                  format: binary
+        required: true
+      responses:
+        default:
+          description: Upload video thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Upload video thành công
+                  result:
+                    $ref: '#/components/schemas/Media'

@@ -1,10 +1,7 @@
-import { ParamsDictionary } from 'express-serve-static-core'
 import { NextFunction, Request, Response } from 'express'
-import { BookmarkTweetRequestBody } from '~/models/requests/Bookmarks.requests'
-import { TokenPayload } from '~/models/requests/Users.requests'
-import bookmarkService from '~/services/bookmarks.services'
-import conversationService from '~/services/conversations.services'
+import { ParamsDictionary } from 'express-serve-static-core'
 import { ConversationParams } from '~/models/requests/Conversations.request'
+import conversationService from '~/services/conversations.services'
 
 export const getConversationController = async (
   req: Request<ParamsDictionary, any, ConversationParams>,
