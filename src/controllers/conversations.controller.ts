@@ -4,8 +4,13 @@ import { BookmarkTweetRequestBody } from '~/models/requests/Bookmarks.requests'
 import { TokenPayload } from '~/models/requests/Users.requests'
 import bookmarkService from '~/services/bookmarks.services'
 import conversationService from '~/services/conversations.services'
+import { ConversationParams } from '~/models/requests/Conversations.request'
 
-export const getConversationController = async (req: Request, res: Response, next: NextFunction) => {
+export const getConversationController = async (
+  req: Request<ParamsDictionary, any, ConversationParams>,
+  res: Response,
+  next: NextFunction
+) => {
   const { receiver_id } = req.params
   const limit = Number(req.query.limit) || 10
   const page = Number(req.query.page) || 1
