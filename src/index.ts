@@ -19,10 +19,12 @@ import conversationRouter from './routes/conversation.routes'
 import { ObjectId } from 'mongodb'
 import swaggerUI from 'swagger-ui-express'
 import swaggerJSDoc from 'swagger-jsdoc'
+import rateLimit from 'express-rate-limit'
 import YAML from 'yaml'
 // import '~/utils/fake'
 import fs from 'fs'
 import path from 'path'
+import helmet from 'helmet'
 
 // const file = fs.readFileSync(path.resolve('paths.yaml'), 'utf-8')
 // const swaggerDocument = YAML.parse(file)
@@ -60,14 +62,25 @@ databaseService.connect().then(() => {
 })
 
 const app = express()
+
 const httpServer = createServer(app)
 const port = process.env.PORT || 4000
 initFolder()
 
-app.use(express.json())
 const corsOptions: CorsOptions = {
   origin: '*'
 }
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false // Disable the `X-RateLimit-*` headers
+  // store: ... , // Use an external store for more precise rate limiting
+})
+
+app.use(limiter)
+app.use(helmet())
+app.use(express.json())
 app.use(cors(corsOptions))
 
 const users: {
